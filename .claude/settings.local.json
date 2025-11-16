@@ -17,7 +17,10 @@
       "Bash(git remote add:*)",
       "Bash(git add:*)",
       "Bash(del \"app\\blueprints\\examples.py\")",
-      "Bash(del \"app\\templates\\examples.html\")"
+      "Bash(del \"app\\templates\\examples.html\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd pizza ordering system with full CRUD functionality\n\n- Configure MySQL database connection with production credentials\n- Update database schema for pizza ordering (customer, pizza, order, order_detail, employee tables)\n- Create pizzas blueprint with modal-based CRUD operations and size dropdown\n- Create customers blueprint with contact management\n- Create orders blueprint managing both orders and order details with dropdowns\n- Add seed_database.py script for populating initial data\n- Update navigation with Pizzas, Customers, and Orders links\n- Remove examples blueprint and templates\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git config:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

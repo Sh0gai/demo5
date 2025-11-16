@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5">
+                <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            </h1>
+            <p class="lead text-muted">Welcome back, {{ session.get('fname') }}! Here's an overview of your pizza ordering system.</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-pizza-slice fa-3x" style="color: var(--gcsu-blue);"></i>
+                    </div>
+                    <h3 class="card-title">{{ total_pizzas }}</h3>
+                    <p class="card-text text-muted">Total Pizzas</p>
+                    <a href="{{ url_for('pizzas.show_pizzas') }}" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x" style="color: var(--gcsu-green);"></i>
+                    </div>
+                    <h3 class="card-title">{{ total_customers }}</h3>
+                    <p class="card-text text-muted">Total Customers</p>
+                    <a href="{{ url_for('customers.show_customers') }}" class="btn btn-sm btn-outline-success">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-shopping-cart fa-3x" style="color: #ff6b6b;"></i>
+                    </div>
+                    <h3 class="card-title">{{ total_orders }}</h3>
+                    <p class="card-text text-muted">Total Orders</p>
+                    <a href="{{ url_for('orders.show_orders') }}" class="btn btn-sm btn-outline-danger">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-dollar-sign fa-3x" style="color: #feca57;"></i>
+                    </div>
+                    <h3 class="card-title">${{ "%.2f"|format(total_revenue_year) }}</h3>
+                    <p class="card-text text-muted">Sales (2025)</p>
+                    <small class="text-muted">All-time: ${{ "%.2f"|format(total_revenue_all_time) }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Recent Orders
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><strong>#{{ order.order_id }}</strong></td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>{{ order.date.strftime('%m/%d/%Y %I:%M %p') }}</td>
+                                    <td><strong>${{ "%.2f"|format(order.total) }}</strong></td>
+                                    <td>
+                                        <a href="{{ url_for('orders.show_orders') }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No orders yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Pizzas -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-fire me-2"></i>Popular Pizzas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if top_pizzas %}
+                    <ul class="list-group list-group-flush">
+                        {% for pizza in top_pizzas %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <strong>{{ pizza.name }}</strong><br>
+                                <small class="text-muted">{{ pizza.size }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ pizza.order_count }} orders</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted mb-0">No data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('orders.show_orders') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus me-2"></i>New Order
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('customers.show_customers') }}" class="btn btn-success w-100">
+                                <i class="fas fa-user-plus me-2"></i>Add Customer
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('pizzas.show_pizzas') }}" class="btn btn-warning w-100">
+                                <i class="fas fa-pizza-slice me-2"></i>Manage Pizzas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-info w-100">
+                                <i class="fas fa-user-plus me-2"></i>Add Employee
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+
+    .list-group-item:first-child {
+        border-top: none;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}

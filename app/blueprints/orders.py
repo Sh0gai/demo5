@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.db_connect import get_db
+from app.blueprints.auth import login_required
 
 orders = Blueprint('orders', __name__)
 
 @orders.route('/', methods=['GET', 'POST'])
+@login_required
 def show_orders():
     db = get_db()
     cursor = db.cursor()
@@ -28,8 +30,9 @@ def show_orders():
     ''')
     all_orders = cursor.fetchall()
 
-    # Get order details for each order
+    # Get order details for each order with totals
     order_details = {}
+    order_totals = {}
     for order in all_orders:
         cursor.execute('''
             SELECT od.order_detail_id, od.pizza_id, od.quantity,
@@ -40,6 +43,16 @@ def show_orders():
             WHERE od.order_id = %s
         ''', (order['order_id'],))
         order_details[order['order_id']] = cursor.fetchall()
+
+        # Calculate total with tax for this order
+        subtotal = sum(detail['subtotal'] for detail in order_details[order['order_id']])
+        tax = float(subtotal) * 0.07
+        total = float(subtotal) + tax
+        order_totals[order['order_id']] = {
+            'subtotal': float(subtotal),
+            'tax': tax,
+            'total': total
+        }
 
     # Get all customers for dropdown
     cursor.execute('SELECT customer_id, name, phone FROM customer ORDER BY name')
@@ -52,10 +65,12 @@ def show_orders():
     return render_template('orders.html',
                          all_orders=all_orders,
                          order_details=order_details,
+                         order_totals=order_totals,
                          all_customers=all_customers,
                          all_pizzas=all_pizzas)
 
 @orders.route('/update_order/<int:order_id>', methods=['POST'])
+@login_required
 def update_order(order_id):
     db = get_db()
     cursor = db.cursor()
@@ -71,6 +86,7 @@ def update_order(order_id):
     return redirect(url_for('orders.show_orders'))
 
 @orders.route('/delete_order/<int:order_id>', methods=['POST'])
+@login_required
 def delete_order(order_id):
     db = get_db()
     cursor = db.cursor()
@@ -83,6 +99,7 @@ def delete_order(order_id):
     return redirect(url_for('orders.show_orders'))
 
 @orders.route('/add_order_detail/<int:order_id>', methods=['POST'])
+@login_required
 def add_order_detail(order_id):
     db = get_db()
     cursor = db.cursor()
@@ -110,6 +127,7 @@ def add_order_detail(order_id):
     return redirect(url_for('orders.show_orders'))
 
 @orders.route('/update_order_detail/<int:order_detail_id>', methods=['POST'])
+@login_required
 def update_order_detail(order_detail_id):
     db = get_db()
     cursor = db.cursor()
@@ -124,6 +142,7 @@ def update_order_detail(order_detail_id):
     return redirect(url_for('orders.show_orders'))
 
 @orders.route('/delete_order_detail/<int:order_detail_id>', methods=['POST'])
+@login_required
 def delete_order_detail(order_detail_id):
     db = get_db()
     cursor = db.cursor()
