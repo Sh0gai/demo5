@@ -33,6 +33,7 @@
                 </div>
                 <div class="card-body">
                     {% if order.order_id in order_details and order_details[order.order_id]|length > 0 %}
+                    <div class="table-responsive">
                     <table class="table table-sm">
                         <thead>
                             <tr>
@@ -80,6 +81,7 @@
                             {% endif %}
                         </tbody>
                     </table>
+                    </div>
                     {% else %}
                     <p class="text-muted">No items in this order yet. Click "Add Item" to add pizzas.</p>
                     {% endif %}

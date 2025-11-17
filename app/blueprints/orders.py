@@ -54,12 +54,12 @@ def show_orders():
             'total': total
         }
 
-    # Get all customers for dropdown
-    cursor.execute('SELECT customer_id, name, phone FROM customer ORDER BY name')
+    # Get all active (non-archived) customers for dropdown
+    cursor.execute('SELECT customer_id, name, phone FROM customer WHERE archived = FALSE ORDER BY name')
     all_customers = cursor.fetchall()
 
-    # Get all pizzas for dropdown
-    cursor.execute('SELECT pizza_id, name, size, price FROM pizza ORDER BY name, size')
+    # Get all active (non-archived) pizzas for dropdown
+    cursor.execute('SELECT pizza_id, name, size, price FROM pizza WHERE archived = FALSE ORDER BY name, size')
     all_pizzas = cursor.fetchall()
 
     return render_template('orders.html',

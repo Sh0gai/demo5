@@ -8,6 +8,7 @@
     </button>
 
     <!-- Table displaying all customers -->
+    <div class="table-responsive">
     <table class="table table-striped mt-4">
         <thead>
             <tr>
@@ -29,8 +30,8 @@
                     <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCustomerModal{{ customer.customer_id }}">
                         Edit
                     </button>
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal{{ customer.customer_id }}">
-                        Delete
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal{{ customer.customer_id }}">
+                        Archive
                     </button>
                 </td>
             </tr>
@@ -67,21 +68,21 @@
                 </div>
             </div>
 
-            <!-- Delete Customer Modal -->
+            <!-- Archive Customer Modal -->
             <div class="modal fade" id="deleteCustomerModal{{ customer.customer_id }}" tabindex="-1" aria-labelledby="deleteCustomerModalLabel{{ customer.customer_id }}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="deleteCustomerModalLabel{{ customer.customer_id }}">Delete Customer</h5>
+                            <h5 class="modal-title" id="deleteCustomerModalLabel{{ customer.customer_id }}">Archive Customer</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Are you sure you want to delete {{ customer.name }}?
+                            Are you sure you want to archive {{ customer.name }}? This will hide them from active listings but preserve them in order history.
                         </div>
                         <div class="modal-footer">
                             <form method="post" action="{{ url_for('customers.delete_customer', customer_id=customer.customer_id) }}">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-danger">Delete</button>
+                                <button type="submit" class="btn btn-warning">Archive</button>
                             </form>
                         </div>
                     </div>
@@ -90,6 +91,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 <!-- Add Customer Modal -->
